@@ -163,7 +163,7 @@
     signInBtn.addEventListener("click", async () => {
       const provider = new firebase.auth.GoogleAuthProvider();
       try {
-        await auth.signInWithPopup(provider);
+        await auth.signInWithRedirect(provider);
       } catch (error) {
         alert("Error de inicio de sesión: " + error.message);
       }

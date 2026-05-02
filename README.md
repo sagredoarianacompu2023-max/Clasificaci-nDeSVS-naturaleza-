@@ -1,18 +1,3 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Biblioteca Científica Natural C.N</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        :root { --primary: #2e7d32; --secondary: #f1f8e9; --accent: #a5d6a7; }
-        body { font-family: 'Segoe UI', sans-serif; background: #fafafa; margin: 0; }
-        
-        /* Navbar */
-        nav { background: var(--primary); color: white; padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
-        .logo { font-weight: bold; font-size: 1.5rem; letter-spacing: 1px; }
-        .btn-google { background: white; color: #444; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
 
         /* Feed de Publicaciones */
         .container { max-width: 1000px; margin: 2rem auto; padding: 0 20px; }

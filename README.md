@@ -400,8 +400,7 @@
           }
         }
       }
-
-    Storage:
+Storage:
       service firebase.storage {
         match /b/{bucket}/o {
           match /entries/{allPaths=**} {

@@ -163,7 +163,7 @@
     signInBtn.addEventListener("click", async () => {
       const provider = new firebase.auth.GoogleAuthProvider();
       try {
-        await auth.signInWithRedirect(provider);
+        await auth.signInWithPopup(provider);
       } catch (error) {
         alert("Error de inicio de sesión: " + error.message);
       }
@@ -400,7 +400,8 @@
           }
         }
       }
-Storage:
+
+    Storage:
       service firebase.storage {
         match /b/{bucket}/o {
           match /entries/{allPaths=**} {

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+n<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
@@ -123,8 +123,9 @@
     // Correo que tiene privilegios de administración.
     const adminEmail = "sagredoarianacompu2023@gmail.com";
 
-    const SUPABASE_URL = "https://bgcbavxgvhezxsjgkqeb.supabase.co";
+    const SUPABASE_URL = "https://bgcbavxgvhezxsjgkqeb.supabase.co/rest/v1/";
     const SUPABASE_KEY = "sb_publishable_MNdq_3YCOGmIbQZ67JY5Sw_oZ4JJBBc";
+
     const SUPABASE_BUCKET = "entries";
 
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -148,10 +149,6 @@
     let currentImageUrl = "";
     let currentImagePath = "";
 
-    signInBtn.addEventListener("click", async () => {
-      await supabaseClient.auth.signInWithOAuth({ provider: "google", options: { redirectTo: window.location.href } });
-    });
-
     signOutBtn.addEventListener("click", async () => {
       await supabaseClient.auth.signOut();
       currentUser = null;
@@ -174,6 +171,17 @@
         currentUser = session?.user || null;
         updateInterface();
       });
+    }
+
+    // Verificar estado de administrador
+    async function checkAdminStatus() {
+      const { data: { user } } = await supabaseClient.auth.getUser();
+      
+      if (user && user.email === adminEmail) {
+        // Aquí muestras los botones de borrar, editar y subir fotos
+        document.getElementById('adminPanel').style.display = 'block';
+        console.log("✓ Acceso de administrador detectado para:", user.email);
+      }
     }
 
     function updateInterface() {

@@ -192,16 +192,6 @@
     let currentImageUrl = "";
     let currentImagePath = "";
 
-    signInBtn.addEventListener("click", async () => {
-      await supabaseClient.auth.signInWithOAuth({ provider: "google", options: { redirectTo: window.location.href } });
-    });
-
-    signOutBtn.addEventListener("click", async () => {
-      await supabaseClient.auth.signOut();
-      currentUser = null;
-      updateInterface();
-    });
-
     // Modal event listeners
     accessBtn.addEventListener("click", () => {
       loginModal.classList.add("show");

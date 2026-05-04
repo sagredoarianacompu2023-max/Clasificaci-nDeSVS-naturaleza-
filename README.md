@@ -294,6 +294,27 @@
       cancelEditBtn.classList.add("hidden");
     }
 
+    // Para Registrarse (Sign Up)
+    async function registrarUsuario() {
+      const { data, error } = await supabaseClient.auth.signUp({
+        email: 'sagredoarianacompu2023@gmail.com',
+        password: 'mnbvcxz2005',
+      })
+      if (error) console.error("Error al registrarse:", error.message);
+      else console.log("Registro exitoso", data.user);
+    }
+
+    // Para Iniciar Sesión (Sign In)
+    async function iniciarSesion() {
+      const { data, error } = await supabaseClient.auth.signInWithPassword({
+        email: 'sagredoarianacompu2023@gmail.com',
+        password: 'mnbvcxz2005',
+      })
+      
+      if (error) console.error("Error al entrar:", error.message);
+      else console.log("Bienvenido Editor", data.user);
+    }
+
     function renderEntry(item) {
       const card = document.createElement("article");
       card.className = "card";

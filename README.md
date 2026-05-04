@@ -1,3 +1,7 @@
+
+
+
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -160,7 +164,9 @@
 
     const SUPABASE_URL = "https://bgcbavxgvhezxsjgkqeb.supabase.co";
     const SUPABASE_KEY = "sb_publishable_MNdq_3YCOGmIbQZ67JY5Sw_oZ4JJBBc";
-    const SUPABASE_BUCKET = "entries";
+    const SUPABASE_BUCKET = "Entries"; 
+    // Debe ser idéntico al nombre en el Dashboard
+    const SUPABASE_BUCKET = "Entries";
 
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -193,8 +199,10 @@
     let currentImagePath = "";
 
     // Modal event listeners
-    accessBtn.addEventListener("click", () => {
-      loginModal.classList.add("show");
+    document.getElementById("userBar").addEventListener("click", (e) => {
+      if (e.target.id === "accessBtn") {
+        loginModal.classList.add("show");
+      }
     });
 
     showLoginBtn.addEventListener("click", () => {
@@ -229,6 +237,7 @@
     function updateInterface() {
       const isAdmin = currentUser?.email === adminEmail;
       const userBar = document.getElementById("userBar");
+      const accessBtn = document.getElementById("accessBtn");
 
       if (currentUser) {
         userBar.innerHTML = `
@@ -239,10 +248,6 @@
         `;
       } else {
         userBar.innerHTML = '<button class="access-btn" id="accessBtn">Acceso Editor</button>';
-        // Reattach event listener
-        document.getElementById("accessBtn").addEventListener("click", () => {
-          loginModal.classList.add("show");
-        });
       }
 
       if (isAdmin) {

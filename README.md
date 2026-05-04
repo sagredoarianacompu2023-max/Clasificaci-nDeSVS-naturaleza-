@@ -118,28 +118,16 @@
     </section>
   </div>
 
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.35.0/dist/umd/supabase.min.js"></script>
   <script>
     // Correo que tiene privilegios de administración.
     const adminEmail = "sagredoarianacompu2023@gmail.com";
 
-    // Rellenar con tu configuración real de Firebase.
-    const firebaseConfig = {
-      apiKey: "TU_API_KEY",
-      authDomain: "TU_AUTH_DOMAIN",
-      projectId: "TU_PROJECT_ID",
-      storageBucket: "TU_STORAGE_BUCKET",
-      messagingSenderId: "TU_MESSAGING_SENDER_ID",
-      appId: "TU_APP_ID"
-    };
+    const SUPABASE_URL = "https://bgcbavxgvhezxsjgkqeb.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_MNdq_3YCOGmIbQZ67JY5Sw_oZ4JJBBc";
+    const SUPABASE_BUCKET = "entries";
 
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-    const storage = firebase.storage();
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     const signInBtn = document.getElementById("signInBtn");
     const signOutBtn = document.getElementById("signOutBtn");
@@ -161,30 +149,37 @@
     let currentImagePath = "";
 
     signInBtn.addEventListener("click", async () => {
-      const provider = new firebase.auth.GoogleAuthProvider();
-      try {
-        await auth.signInWithPopup(provider);
-      } catch (error) {
-        alert("Error de inicio de sesión: " + error.message);
-      }
+      await supabaseClient.auth.signInWithOAuth({ provider: "google", options: { redirectTo: window.location.href } });
     });
 
     signOutBtn.addEventListener("click", async () => {
-      await auth.signOut();
+      await supabaseClient.auth.signOut();
+      currentUser = null;
+      updateInterface();
     });
 
     publishBtn.addEventListener("click", handlePublish);
     cancelEditBtn.addEventListener("click", resetForm);
 
-    auth.onAuthStateChanged((user) => {
-      currentUser = user;
+    async function initAuth() {
+      const {
+        data: { session },
+        error
+      } = await supabaseClient.auth.getSession();
+      if (error) console.warn("Supabase Auth error:", error.message);
+      currentUser = session?.user || null;
       updateInterface();
-    });
+
+      supabaseClient.auth.onAuthStateChange((event, session) => {
+        currentUser = session?.user || null;
+        updateInterface();
+      });
+    }
 
     function updateInterface() {
       const isAdmin = currentUser?.email === adminEmail;
       if (currentUser) {
-        userInfo.textContent = `Usuario: ${currentUser.displayName || currentUser.email}`;
+        userInfo.textContent = `Usuario: ${currentUser.user_metadata?.full_name || currentUser.email}`;
         signInBtn.classList.add("hidden");
         signOutBtn.classList.remove("hidden");
       } else {
@@ -206,10 +201,23 @@
       feedStatus.textContent = message;
     }
 
-    function formatTimestamp(timestamp) {
-      if (!timestamp) return "Fecha desconocida";
-      const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+    function formatTimestamp(value) {
+      if (!value) return "Fecha desconocida";
+      const date = new Date(value);
       return date.toLocaleDateString("es-ES", { weekday: "short", year: "numeric", month: "short", day: "numeric" });
+    }
+
+    async function uploadImage(file) {
+      const imagePath = `${Date.now()}_${file.name.replace(/\s+/g, "_")}`;
+      const { data, error } = await supabaseClient.storage.from(SUPABASE_BUCKET).upload(imagePath, file, {
+        cacheControl: "3600",
+        upsert: false
+      });
+      if (error) throw new Error(error.message);
+
+      const { data: publicUrlData, error: publicUrlError } = supabaseClient.storage.from(SUPABASE_BUCKET).getPublicUrl(imagePath);
+      if (publicUrlError) throw new Error(publicUrlError.message);
+      return { imageUrl: publicUrlData.publicUrl, imagePath };
     }
 
     async function handlePublish() {
@@ -242,12 +250,11 @@
 
         if (file) {
           if (currentImagePath) {
-            await storage.ref(currentImagePath).delete().catch(() => {});
+            await supabaseClient.storage.from(SUPABASE_BUCKET).remove([currentImagePath]).catch(() => {});
           }
-          const timestamp = Date.now();
-          imagePath = `entries/${timestamp}_${file.name.replace(/\s+/g, "_")}`;
-          await storage.ref(imagePath).put(file);
-          imageUrl = await storage.ref(imagePath).getDownloadURL();
+          const uploaded = await uploadImage(file);
+          imageUrl = uploaded.imageUrl;
+          imagePath = uploaded.imagePath;
         }
 
         const payload = {
@@ -255,16 +262,19 @@
           text,
           imageUrl,
           imagePath,
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+          updatedAt: new Date().toISOString()
         };
 
         if (currentEditId) {
-          await db.collection("Diario Visuala").doc(currentEditId).update(payload);
+          const { error } = await supabaseClient.from("diario").update(payload).eq("id", currentEditId);
+          if (error) throw new Error(error.message);
         } else {
-          await db.collection("Diario Visual").add({ ...payload, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+          const { error } = await supabaseClient.from("diario").insert([{ ...payload, createdAt: new Date().toISOString() }]);
+          if (error) throw new Error(error.message);
         }
 
         resetForm();
+        await loadEntries();
       } catch (error) {
         alert("Error al guardar la publicación: " + error.message);
       } finally {
@@ -284,8 +294,7 @@
       cancelEditBtn.classList.add("hidden");
     }
 
-    function renderEntry(doc) {
-      const item = doc.data();
+    function renderEntry(item) {
       const card = document.createElement("article");
       card.className = "card";
 
@@ -321,13 +330,13 @@
         editButton.type = "button";
         editButton.className = "edit";
         editButton.textContent = "Editar";
-        editButton.addEventListener("click", () => loadEntryForEdit(doc.id, item));
+        editButton.addEventListener("click", () => loadEntryForEdit(item.id, item));
 
         const deleteButton = document.createElement("button");
         deleteButton.type = "button";
         deleteButton.className = "delete";
         deleteButton.textContent = "Eliminar";
-        deleteButton.addEventListener("click", () => deleteEntry(doc.id, item));
+        deleteButton.addEventListener("click", () => deleteEntry(item.id, item));
 
         actions.append(editButton, deleteButton);
         body.appendChild(actions);
@@ -359,56 +368,37 @@
 
       try {
         if (item.imagePath) {
-          await storage.ref(item.imagePath).delete().catch(() => {});
+          await supabaseClient.storage.from(SUPABASE_BUCKET).remove([item.imagePath]).catch(() => {});
         }
-        await db.collection("Diario Visual").doc(id).delete();
+        const { error } = await supabaseClient.from("diario").delete().eq("id", id);
+        if (error) throw new Error(error.message);
+        await loadEntries();
       } catch (error) {
         alert("Error al eliminar: " + error.message);
       }
     }
 
-    function subscribeFeed() {
-      db.collection("Diario Visual").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
-        entriesContainer.innerHTML = "";
-        if (snapshot.empty) {
-          showStatus("Sin publicaciones aún. El administrador puede agregar entradas.");
-          return;
-        }
-        snapshot.forEach((doc) => {
-          entriesContainer.appendChild(renderEntry(doc));
-        });
-        showStatus(`${snapshot.size} publicación(es) visibles.`);
-      }, (error) => {
+    async function loadEntries() {
+      const { data, error } = await supabaseClient.from("diario").select("*").order("createdAt", { ascending: false });
+      if (error) {
         showStatus("No se pudo cargar el feed: " + error.message);
+        return;
+      }
+
+      entriesContainer.innerHTML = "";
+      if (!data || data.length === 0) {
+        showStatus("Sin publicaciones aún. El administrador puede agregar entradas.");
+        return;
+      }
+
+      data.forEach((item) => {
+        entriesContainer.appendChild(renderEntry(item));
       });
+      showStatus(`${data.length} publicación(es) visibles.`);
     }
 
-    subscribeFeed();
+    initAuth();
+    loadEntries();
   </script>
-
 </body>
 </html>
-
-
-<rules_version = '2';
-  service cloud.firestore {
-        match /databases/{database}/documents {
-          match /Diario Visual/{docId} {
-            allow read: if true;
-            allow create, update, delete: if request.auth != null
-              && request.auth.token.email == "sagredoarianacompu2023@gmail.com";
-          }
-        }
-      }
-
-    Storage:
-      service firebase.storage {
-        match /b/{bucket}/o {
-          match /entries/{allPaths=**} {
-            allow read: if true;
-            allow write: if request.auth != null
-              && request.auth.token.email == "sagredoarianacompu2023@gmail.com";
-          }
-        }
-      }
-  >

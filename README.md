@@ -1,7 +1,3 @@
-
-
-
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -100,6 +96,10 @@
       <h1>DIARIO VISUAL</h1>
       <div id="userBar">
         <button class="access-btn" id="accessBtn">Acceso Editor</button>
+        <div class="user-info" id="userInfo" style="display: none;">
+          <span id="userName"></span>
+          <button class="logout-btn" onclick="cerrarSesion()">Cerrar sesión</button>
+        </div>
       </div>
     </header>
 
@@ -163,12 +163,13 @@
     const adminEmail = "sagredoarianacompu2023@gmail.com";
 
     const SUPABASE_URL = "https://bgcbavxgvhezxsjgkqeb.supabase.co";
-    const SUPABASE_KEY = "sb_publishable_MNdq_3YCOGmIbQZ67JY5Sw_oZ4JJBBc";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJnY2JhdnhndmhlenhzamdrcWViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4Mzk0NzcsImV4cCI6MjA5MzQxNTQ3N30.i1lVwyKzAXcZ5MM3M6rzpSG9-bjp6khfYwe6qHlxhRY";
     const SUPABASE_BUCKET = "Entries"; 
     // Debe ser idéntico al nombre en el Dashboard
-    const SUPABASE_BUCKET = "Entries";
 
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+      db: { schema: 'public' }
+    });
 
     const signInBtn = document.getElementById("signInBtn");
     const createEditorBtn = document.getElementById("createEditorBtn");
@@ -199,10 +200,8 @@
     let currentImagePath = "";
 
     // Modal event listeners
-    document.getElementById("userBar").addEventListener("click", (e) => {
-      if (e.target.id === "accessBtn") {
-        loginModal.classList.add("show");
-      }
+    accessBtn.addEventListener("click", () => {
+      loginModal.classList.add("show");
     });
 
     showLoginBtn.addEventListener("click", () => {
@@ -238,16 +237,16 @@
       const isAdmin = currentUser?.email === adminEmail;
       const userBar = document.getElementById("userBar");
       const accessBtn = document.getElementById("accessBtn");
+      const userInfo = document.getElementById("userInfo");
+      const userName = document.getElementById("userName");
 
       if (currentUser) {
-        userBar.innerHTML = `
-          <div class="user-info">
-            <span>${currentUser.user_metadata?.full_name || currentUser.email}</span>
-            <button class="logout-btn" onclick="cerrarSesion()">Cerrar sesión</button>
-          </div>
-        `;
+        userName.textContent = currentUser.user_metadata?.full_name || currentUser.email;
+        accessBtn.style.display = "none";
+        userInfo.style.display = "block";
       } else {
-        userBar.innerHTML = '<button class="access-btn" id="accessBtn">Acceso Editor</button>';
+        accessBtn.style.display = "block";
+        userInfo.style.display = "none";
       }
 
       if (isAdmin) {
@@ -291,7 +290,7 @@
 
       const { data: publicUrlData, error: publicUrlError } = supabaseClient.storage.from(SUPABASE_BUCKET).getPublicUrl(imagePath);
       if (publicUrlError) throw new Error(publicUrlError.message);
-      return { imageUrl: publicUrlData.publicUrl, imagePath };
+      return { imageUrl:publicUrlData.publicUrl, imagePath };
     }
 
     async function handlePublish() {
@@ -340,10 +339,10 @@
         };
 
         if (currentEditId) {
-          const { error } = await supabaseClient.from("diario").update(payload).eq("id", currentEditId);
+          const { error } = await supabaseClient.from('diario').update(payload).eq('id', currentEditId);
           if (error) throw new Error(error.message);
         } else {
-          const { error } = await supabaseClient.from("diario").insert([{ ...payload, createdAt: new Date().toISOString() }]);
+          const { error } = await supabaseClient.from('diario').insert([{ ...payload, createdAt: new Date().toISOString() }]);
           if (error) throw new Error(error.message);
         }
 
@@ -528,7 +527,7 @@
         if (item.imagePath) {
           await supabaseClient.storage.from(SUPABASE_BUCKET).remove([item.imagePath]).catch(() => {});
         }
-        const { error } = await supabaseClient.from("diario").delete().eq("id", id);
+        const { error } = await supabaseClient.from('diario').delete().eq('id', id);
         if (error) throw new Error(error.message);
         await loadEntries();
       } catch (error) {
@@ -537,7 +536,7 @@
     }
 
     async function loadEntries() {
-      const { data, error } = await supabaseClient.from("diario").select("*").order("createdAt", { ascending: false });
+      const { data, error } = await supabaseClient.from('diario').select('*').order('createdAt', { ascending: false });
       if (error) {
         showStatus("No se pudo cargar el feed: " + error.message);
         return;

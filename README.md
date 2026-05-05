@@ -69,8 +69,8 @@
     .gallery { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
 
     .card { position: relative; overflow: hidden; border-radius: 12px; background: rgba(5, 13, 6, 0.96); box-shadow: inset 0 0 40px rgba(0, 255, 120, 0.04), var(--shadow); }
-    .card-image { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; filter: sepia(0.22) saturate(0.38) hue-rotate(80deg) contrast(0.96); transition: filter 0.35s ease, transform 0.35s ease; cursor: pointer; }
-    .card:hover .card-image { filter: none; transform: scale(1.02); }
+    .card-image { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; transition: transform 0.35s ease; cursor: pointer; }
+    .card:hover .card-image { transform: scale(1.02); }
     .card-body { padding: 14px; display: grid; gap: 10px; }
     .card-title { margin: 0; font-size: 1rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); }
     .card-date { margin: 0; font-size: 0.8rem; color: rgba(158, 255, 143, 0.72); }
@@ -304,11 +304,6 @@
         return;
       }
 
-      if (!title || !text) {
-        alert("Debes completar el título y el texto.");
-        return;
-      }
-
       if (!currentImageUrl && !file) {
         alert("Selecciona una imagen para publicar.");
         return;
@@ -331,8 +326,8 @@
         }
 
         const payload = {
-          title,
-          text,
+          title: title || "",
+          text: text || "",
           imageUrl,
           imagePath,
           updatedAt: new Date().toISOString()
@@ -341,9 +336,10 @@
         if (currentEditId) {
           const { error } = await supabaseClient.from('diario').update(payload).eq('id', currentEditId);
           if (error) throw new Error(error.message);
+          alert("Cambios guardados con éxito.");
+          window.location.reload();
         } else {
           const { error } = await supabaseClient.from('diario').insert([{ ...payload, createdAt: new Date().toISOString() }]);
-          if (error) throw new Error(error.message);
         }
 
         resetForm();
@@ -356,15 +352,25 @@
       }
     }
 
-    function resetForm() {
-      currentEditId = null;
-      currentImageUrl = "";
-      currentImagePath = "";
-      imageInput.value = "";
-      titleInput.value = "";
-      textInput.value = "";
-      publishBtn.textContent = "Publicar";
-      cancelEditBtn.classList.add("hidden");
+    async function guardarEdicion(id) {
+      const nuevoTitulo = titleInput.value;
+      const nuevoTexto = textInput.value;
+
+      const { error } = await supabaseClient
+        .from('diario')
+        .update({
+          title: nuevoTitulo,
+          text: nuevoTexto,
+          updatedAt: new Date().toISOString()
+        })
+        .eq('id', id);
+
+      if (error) {
+        alert("Error al actualizar: " + error.message);
+      } else {
+        alert("Cambios guardados con éxito.");
+        window.location.reload();
+      }
     }
 
     // Para Registrarse (Sign Up)
@@ -454,6 +460,7 @@
     function renderEntry(item) {
       const card = document.createElement("article");
       card.className = "card";
+      card.dataset.id = item.id;
 
       const image = document.createElement("img");
       image.className = "card-image";
@@ -493,7 +500,7 @@
         deleteButton.type = "button";
         deleteButton.className = "delete";
         deleteButton.textContent = "Eliminar";
-        deleteButton.addEventListener("click", () => deleteEntry(item.id, item));
+        deleteButton.addEventListener("click", () => eliminarPublicacion(item.id, item.imagePath));
 
         actions.append(editButton, deleteButton);
         body.appendChild(actions);
@@ -514,24 +521,36 @@
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    async function deleteEntry(id, item) {
+    async function eliminarPublicacion(id, imagePath) {
       const isAdmin = currentUser?.email === adminEmail;
       if (!isAdmin) {
         alert("Solo el administrador puede borrar publicaciones.");
         return;
       }
-      const confirmed = confirm("¿Eliminar esta publicación? Esta acción no se puede deshacer.");
-      if (!confirmed) return;
+
+      const confirmar = confirm("¿Estás seguro de eliminar esta publicación por completo?");
+      if (!confirmar) return;
 
       try {
-        if (item.imagePath) {
-          await supabaseClient.storage.from(SUPABASE_BUCKET).remove([item.imagePath]).catch(() => {});
+        // 1. Borrar la fila de la tabla 'diario' (Elimina el texto y el registro)
+        const { error: tableError } = await supabaseClient
+          .from('diario')
+          .delete()
+          .eq('id', id);
+
+        if (tableError) throw tableError;
+
+        // 2. Borrar la imagen del Storage
+        if (imagePath) {
+          await supabaseClient.storage.from('Entries').remove([imagePath]);
         }
-        const { error } = await supabaseClient.from('diario').delete().eq('id', id);
-        if (error) throw new Error(error.message);
-        await loadEntries();
+
+        alert("Publicación eliminada correctamente.");
+        window.location.reload();
+
       } catch (error) {
-        alert("Error al eliminar: " + error.message);
+        console.error("Error al eliminar:", error);
+        alert("No se pudo eliminar: " + error.message);
       }
     }
 
@@ -556,6 +575,19 @@
 
     initAuth();
     loadEntries();
+
+    function resetForm() {
+    // Limpia los inputs de texto
+    document.getElementById('titleInput').value = '';
+    document.getElementById('textInput').value = '';
+    document.getElementById('imageInput').value = '';
+    
+    // Si tienes un mensaje de estado, lo reinicia
+    const status = document.getElementById('feedStatus');
+    if (status) status.innerText = '';
+    
+    console.log("Formulario reiniciado correctamente.");
+}
   </script>
 </body>
 </html>

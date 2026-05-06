@@ -6,28 +6,23 @@
   <title>Diario Visual Retro</title>
   <style>
     :root {
-      --retro-blue: #3A6289;
-      --light-blue: #79d7f9;
-      --vintage-cream: #F5F2EC;
+      --retro-blue: #469cf39d;
+      --light-blue: #085f7f;
+      --vintage-cream: #8b75ed;
       --dark-blue: #292D53;
-      --text: #710fcd;
+      --text: #020134;
       --muted: rgba(41, 45, 83, 0.8);
       --panel: rgba(255, 255, 255, 0.92);
       --shadow: 0 18px 50px rgba(41, 45, 83, 0.15);
     }
 
     * { box-sizing: border-box; }
-    html, body { margin: 0; min-height: 100%; background-color:#282b5d; color: var(--#8e849c); font-family: 'Courier New', Courier, monospace; }
+    html, body { margin: 0; min-height: 100%; background-color:rgb(12, 36, 77); color: var(--#30066b); font-family: 'Courier New', Courier, monospace; }
 
     body::before {
       content: "";
       position: fixed;
       inset: 0;
-      pointer-events: none;
-      background-image: linear-gradient(rgba(255,255,255,0.18) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.18) 1px, transparent 1px);
-      background-size: 100% 6px, 6px 100%;
-      opacity: 1;
-      z-index: 0;
     }
 
     .app-shell { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 24px; }
@@ -52,7 +47,7 @@
     .modal-content .action-row { display: flex; gap: 12px; justify-content: center; margin-top: 20px; }
     .modal-content .button { min-width: 120px; }
 
-    .panel { margin-bottom: 32px; padding: 20px; background: rgba(255,255,255,0.85); border-radius: 20px; box-shadow: var(--shadow); border: 1px solid rgba(58, 98, 137, 0.16); }
+    .panel { margin-bottom: 32px; padding: 20px; background: rgba(123, 75, 236, 0.453); border-radius: 20px; box-shadow: var(--shadow); border: 1px solid rgba(58, 98, 137, 0.16); }
     .hidden { display: none !important; }
     .panel h2 { margin-top: 0; color: var(--retro-blue); letter-spacing: 0.06em; text-transform: uppercase; font-size: 1.1rem; }
 
@@ -66,7 +61,7 @@
     .secondary { background: transparent; color: var(--dark-blue); }
     .button:hover, .secondary:hover { opacity: 0.92; transform: translateY(-1px); }
 
-    .feed-title { margin: 0 0 16px; font-size: 1.2rem; color:#89baf2; letter-spacing: 0.08em; text-transform: uppercase; }
+    .feed-title { margin: 0 0 16px; font-size: 1.2rem; color:#5e92ce; letter-spacing: 0.08em; text-transform: uppercase; }
     .gallery, .feed-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; padding: 20px 0; }
 
     .card { position: relative; border-radius: 25px; overflow: hidden; background: #ffffff; cursor: pointer; transition: transform 0.3s ease; box-shadow: var(--shadow); }

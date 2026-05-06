@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title> Diario Visual </title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <title>Diario Visual Retro</title>
   <style>
     :root {
       --retro-blue: #469cf39d;
@@ -64,19 +65,47 @@
     .feed-title { margin: 0 0 16px; font-size: 1.2rem; color:#5e92ce; letter-spacing: 0.08em; text-transform: uppercase; }
     .gallery, .feed-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; padding: 20px 0; }
 
-    .card { position: relative; border-radius: 25px; overflow: hidden; background: #ffffff; cursor: pointer; transition: transform 0.3s ease; box-shadow: var(--shadow); }
-    .card:hover { transform: scale(1.02); }
-    .card-image { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; filter: none; transition: transform 0.3s ease; display: block; }
-    .card:hover .card-image { transform: scale(1.02); }
+    .card {
+      position: relative;
+      border-radius: 25px;
+      background: #f1f6ff;
+      cursor: pointer;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.4);
+    }
+    .card:hover { transform: translateY(-2px); box-shadow: 0 20px 60px rgba(41, 45, 83, 0.16); }
+    .card-image {
+      width: 100%;
+      border-radius: 20px;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      filter: none;
+      display: block;
+    }
 
-    .card-overlay { position: absolute; bottom: 0; width: 100%; background: linear-gradient(transparent, var(--dark-blue)); color: white; padding: 16px; box-sizing: border-box; }
-    .card-overlay-title { font-size: 14px; font-weight: bold; margin: 0; color: rgba(192, 186, 244, 0.808); }
-    .card-overlay-date { font-size: 10px; opacity: 0.8; margin: 4px 0 0; }
-
-    .card-body { padding: 16px; display: grid; gap: 10px; }
-    .card-title { margin: 0; font-size: 1rem; font-weight: bold; color: var(--retro-blue); }
-    .card-date { margin: 0; font-size: 0.82rem; color: var(--muted); opacity: 0.85; }
-    .card-text { margin: 0; white-space: pre-wrap; line-height: 1.5; color: var(--dark-blue); min-height: 3rem; }
+    .card-body {
+      padding: 12px 12px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .card-title {
+      margin: 0;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text);
+      text-align: left;
+      line-height: 1.25;
+    }
+    .card-date {
+      margin: 0;
+      font-size: 0.78rem;
+      color: rgba(41, 45, 83, 0.62);
+      text-align: left;
+    }
+    .card-text { display: none; }
 
     /* BOTONES DE LA CARD (EDITAR/BORRAR): Ahora sólidos */
     .card-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; padding-bottom: 10px; padding-right: 10px; }
@@ -90,32 +119,76 @@
     /* Modal Expandido */
     .entry-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(41, 45, 83, 0.95); z-index: 2000; justify-content: center; align-items: center; padding: 20px; overflow-y: auto; }
     .entry-modal.show { display: flex; }
-    .entry-modal-content { background: var(--vintage-cream); border-radius: 30px; max-width: 600px; width: 100%; padding: 30px; text-align: center; box-shadow: var(--shadow); position: relative; }
-    .entry-modal-image { width: 100%; border-radius: 20px; margin-bottom: 20px; max-height: 400px; object-fit: contain; }
-    .entry-modal-title { font-size: 1.5rem; color:#21104b; margin: 0 0 10px; font-weight: bold; }
-    .entry-modal-date { font-size: 0.9rem; color: var(--muted); margin: 0 0 20px; }
-    .entry-modal-text { text-align: left; color:rgba(22, 27, 71, 0.88); white-space: pre-wrap; line-height: 1.6; margin: 20px 0; }
-    .entry-modal-gallery { display: flex; gap: 10px; margin: 20px 0; justify-content: center; flex-wrap: wrap; }
-    .entry-modal-thumbnail { width: 60px; height: 60px; border-radius: 10px; cursor: pointer; border: 2px solid transparent; transition: border 0.2s ease; object-fit: cover; }
+    /* Contenedor del Modal */
+    .entry-modal-content {
+      background: #F5F2EC;
+      width: 92vw;
+      height: 85vh;
+      border-radius: 30px;
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+      overflow: hidden;
+      position: relative;
+      box-shadow: var(--shadow);
+    }
+
+    /* Imagen dentro del modal */
+    .entry-modal-image {
+      width: 100%;
+      height: 60%;
+      object-fit: cover;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .entry-modal-icons {
+      display: flex;
+      justify-content: flex-start;
+      gap: 18px;
+      margin: 14px 18px 0;
+    }
+    .entry-modal-icons span {
+      font-size: 1.45rem;
+      cursor: pointer;
+      color: var(--dark-blue);
+      transition: color 0.2s ease, transform 0.2s ease;
+    }
+    .entry-modal-icons span:hover {
+      color: var(--retro-blue);
+      transform: translateY(-1px);
+    }
+
+    .entry-modal-gallery { display: flex; gap: 10px; margin: 14px 18px 0; justify-content: flex-start; overflow-x: auto; }
+    .entry-modal-thumbnail { width: 52px; height: 52px; border-radius: 14px; cursor: pointer; border: 2px solid transparent; transition: border 0.2s ease; object-fit: cover; }
     .entry-modal-thumbnail.active { border-color: var(--retro-blue); }
-    .entry-modal-controls { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
-    .entry-modal-btn { background: var(--retro-blue); color: var(--vintage-cream); border: none; padding: 10px 16px; border-radius: 10px; cursor: pointer; font-size: 0.9rem; transition: background 0.2s ease; }
+
+    .entry-modal-info {
+      padding: 15px;
+      flex: 1;
+      overflow-y: auto;
+      text-align: left;
+    }
+
+    .entry-modal-title { font-weight: bold; font-size: 1.1rem; margin-bottom: 5px; color: #292D53; }
+    .entry-modal-text {
+      font-size: 0.95rem;
+      line-height: 1.4;
+      color: #444;
+      white-space: pre-wrap;
+      margin: 0;
+    }
+    .entry-modal-date { margin: 10px 0 0; font-size: 0.82rem; color: rgba(41, 45, 83, 0.6); }
+
+    .entry-modal-controls { display: flex; gap: 10px; justify-content: space-between; flex-wrap: wrap; margin-top: 12px; }
+    .entry-modal-btn { background: var(--retro-blue); color: var(--vintage-cream); border: none; padding: 10px 16px; border-radius: 12px; cursor: pointer; font-size: 0.92rem; transition: background 0.2s ease; }
     .entry-modal-btn:hover { background: var(--light-blue); }
-    .entry-modal-close { background: transparent; color: var(--dark-blue); font-size: 1.5rem; cursor: pointer; border: none; position: absolute; top: 20px; right: 20px; }
-    .entry-modal-close:hover { opacity: 0.7; }
+    .entry-modal-close { background: transparent; color: var(--dark-blue); font-size: 1.6rem; cursor: pointer; border: none; position: absolute; top: 18px; right: 18px; }
+    .entry-modal-close:hover { opacity: 0.8; }
 
     .status { margin-top: 12px; color: var(--muted); font-size: 0.9rem; }
 
-    @media (max-width: 900px) {
-      .gallery, .feed-grid { grid-template-columns: repeat(2, 1fr); }
-    }
-
-    @media (max-width: 700px) {
-      .app-shell { padding: 16px; }
-      header { flex-direction: column; align-items: center; gap: 16px; }
-      .modal-content { padding: 20px; }
-      .gallery, .feed-grid { grid-template-columns: 1fr; }
-    }
+    /* Mantener siempre 3 columnas en todo dispositivo */
+    .gallery, .feed-grid { grid-template-columns: repeat(3, 1fr) !important; }
   </style>
 </head>
 <body>
@@ -128,6 +201,7 @@
           <span id="userName"></span>
           <button class="logout-btn" onclick="cerrarSesion()">Cerrar sesión</button>
         </div>
+      </div>
     </header>
 
     <!-- Modal de Login -->
@@ -189,10 +263,13 @@
     <div class="entry-modal-content">
       <button class="entry-modal-close" onclick="closeEntryModal()">×</button>
       <img class="entry-modal-image" id="modalImage" src="" alt="Imagen de la entrada" />
-      <h2 class="entry-modal-title" id="modalTitle"></h2>
-      <p class="entry-modal-date" id="modalDate"></p>
+     
       <div class="entry-modal-gallery" id="modalGallery"></div>
-      <p class="entry-modal-text" id="modalText"></p>
+      <div class="entry-modal-info">
+        <h2 class="entry-modal-title" id="modalTitle"></h2>
+        <p class="entry-modal-text" id="modalText"></p>
+        <p class="entry-modal-date" id="modalDate"></p>
+      </div>
       <div class="entry-modal-controls" id="modalControls"></div>
     </div>
   </div>
@@ -543,23 +620,23 @@
       image.src = imageUrl;
       image.alt = item.title || "Publicación";
 
-      const overlay = document.createElement("div");
-      overlay.className = "card-overlay";
+      const body = document.createElement("div");
+      body.className = "card-body";
 
-      const overlayTitle = document.createElement("p");
-      overlayTitle.className = "card-overlay-title";
-      overlayTitle.textContent = item.title || "Sin título";
+      const titleEl = document.createElement("h3");
+      titleEl.className = "card-title";
+      titleEl.textContent = item.title || "Sin título";
 
-      const overlayDate = document.createElement("p");
-      overlayDate.className = "card-overlay-date";
-      overlayDate.textContent = formatTimestamp(item.createdAt || item.updatedAt);
+      const dateEl = document.createElement("p");
+      dateEl.className = "card-date";
+      dateEl.textContent = formatTimestamp(item.createdAt || item.updatedAt);
 
-      overlay.append(overlayTitle, overlayDate);
+      body.append(titleEl, dateEl);
 
       // Hacer la tarjeta clickeable para abrir modal
       card.addEventListener("click", (e) => {
         if (!e.target.classList.contains("delete") && !e.target.classList.contains("edit")) {
-          openEntryModal(item);
+          verDetalle(item.id);
         }
       });
 
@@ -598,8 +675,19 @@
         card.appendChild(actions);
       }
 
-      card.append(image, overlay);
+      card.append(image, body);
       return card;
+    }
+
+    async function verDetalle(id) {
+      try {
+        const { data: item, error } = await supabaseClient.from('diario').select('*').eq('id', id).single();
+        if (error) throw new Error(error.message);
+        openEntryModal(item);
+      } catch (error) {
+        console.error('Error al cargar detalle:', error);
+        alert('No se pudo mostrar el detalle de la publicación.');
+      }
     }
 
     function openEntryModal(item) {

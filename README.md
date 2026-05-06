@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
@@ -127,7 +128,6 @@
           <span id="userName"></span>
           <button class="logout-btn" onclick="cerrarSesion()">Cerrar sesión</button>
         </div>
-      </div>
     </header>
 
     <!-- Modal de Login -->

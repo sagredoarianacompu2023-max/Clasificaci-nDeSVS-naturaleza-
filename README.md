@@ -6,87 +6,120 @@
   <title>Diario Visual Retro</title>
   <style>
     :root {
-      --bg: #060b04;
-      --panel: rgba(7, 18, 8, 0.95);
-      --panel-strong: rgba(2, 8, 3, 0.98);
-      --text: #a3ff8f;
-      --text-soft: #7edc8f;
-      --border: rgba(134, 255, 132, 0.18);
-      --accent: #d0ffad;
-      --shadow: 0 0 20px rgba(51, 255, 116, 0.08);
+      --retro-blue: #3A6289;
+      --light-blue: #79d7f9;
+      --vintage-cream: #F5F2EC;
+      --dark-blue: #292D53;
+      --text: #710fcd;
+      --muted: rgba(41, 45, 83, 0.8);
+      --panel: rgba(255, 255, 255, 0.92);
+      --shadow: 0 18px 50px rgba(41, 45, 83, 0.15);
     }
 
     * { box-sizing: border-box; }
-    html, body { margin: 0; min-height: 100%; background: radial-gradient(circle at top, rgba(20, 80, 20, 0.2), transparent 35%), linear-gradient(180deg, #0b1408 0%, #050703 100%); color: var(--text); font-family: "Courier New", Courier, monospace; }
+    html, body { margin: 0; min-height: 100%; background-color:#282b5d; color: var(--#8e849c); font-family: 'Courier New', Courier, monospace; }
 
     body::before {
       content: "";
       position: fixed;
       inset: 0;
       pointer-events: none;
-      background-image: linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
-      background-size: 100% 4px, 4px 100%;
-      opacity: 0.16;
+      background-image: linear-gradient(rgba(255,255,255,0.18) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.18) 1px, transparent 1px);
+      background-size: 100% 6px, 6px 100%;
+      opacity: 1;
       z-index: 0;
     }
 
     .app-shell { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 24px; }
-    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding: 16px 0; }
-    h1 { margin: 0; font-size: clamp(1.8rem, 3vw, 2.5rem); letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); text-shadow: 0 0 10px rgba(208, 255, 173, 0.5); }
-    .access-btn { background: none; border: 1px solid var(--border); border-radius: 8px; color: var(--text-soft); padding: 8px 16px; cursor: pointer; font-family: inherit; font-size: 0.9rem; transition: all 0.2s ease; }
-    .access-btn:hover { background: rgba(24, 55, 25, 0.5); color: var(--text); }
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding: 8px 0; }
+    h1 { margin: 0; font-size: clamp(1.8rem, 3vw, 2.8rem); letter-spacing: 0.08em; text-transform: uppercase; color: var(--retro-blue); }
+    .access-btn, .logout-btn, .button, .secondary { font-family: inherit; }
+    .access-btn { background: var(--retro-blue); color: var(--vintage-cream); border: 1px solid var(--dark-blue); border-radius: 12px; padding: 10px 18px; cursor: pointer; transition: transform 0.2s ease, background 0.2s ease; }
+    .access-btn:hover { background: var(--light-blue); transform: translateY(-1px); }
 
     .user-info { display: flex; align-items: center; gap: 12px; font-size: 0.9rem; }
-    .user-info span { color: var(--text-soft); }
-    .logout-btn { background: none; border: 1px solid rgba(255, 110, 110, 0.3); border-radius: 8px; color: #ff9c9c; padding: 6px 12px; cursor: pointer; font-family: inherit; font-size: 0.85rem; transition: all 0.2s ease; }
-    .logout-btn:hover { background: rgba(255, 110, 110, 0.1); }
+    .user-info span { color: var(--vintage-cream); }
+    .logout-btn { background: var(--vintage-cream); border: 1px solid var(--dark-blue); border-radius: 12px; color: var(--dark-blue); padding: 8px 14px; cursor: pointer; transition: background 0.2s ease; opacity: 1; }
+    .logout-btn:hover { background: var(--light-blue); }
 
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(41, 45, 83, 0.88); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
     .modal-overlay.show { opacity: 1; visibility: visible; }
-    .modal-content { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 24px; max-width: 400px; width: 90%; box-shadow: var(--shadow); }
-    .modal-content h2 { margin-top: 0; color: var(--accent); font-size: 1.2rem; text-align: center; }
-    .modal-content .field-group { margin-top: 20px; }
-    .modal-content .field-group label { font-size: 0.9rem; }
-    .modal-content input { margin-bottom: 8px; }
+    .modal-content { background: var(--vintage-cream); padding: 24px; border-radius: 28px; max-width: 480px; width: 90%; text-align: center; box-shadow: var(--shadow); }
+    .modal-content h2 { margin-top: 0; color: var(--retro-blue); font-size: 1.5rem; }
+    .modal-content .field-group { margin-top: 18px; }
+    .modal-content .field-group label { font-size: 0.95rem; color: var(--dark-blue); }
+    .modal-content input { margin-bottom: 10px; }
     .modal-content .action-row { display: flex; gap: 12px; justify-content: center; margin-top: 20px; }
-    .modal-content .button { min-width: 100px; }
+    .modal-content .button { min-width: 120px; }
 
-    .panel { margin-bottom: 32px; padding: 20px; background: var(--panel); border-radius: 12px; box-shadow: var(--shadow); }
+    .panel { margin-bottom: 32px; padding: 20px; background: rgba(255,255,255,0.85); border-radius: 20px; box-shadow: var(--shadow); border: 1px solid rgba(58, 98, 137, 0.16); }
     .hidden { display: none !important; }
-    .panel h2 { margin-top: 0; color: var(--accent); letter-spacing: 0.06em; text-transform: uppercase; font-size: 1.1rem; }
+    .panel h2 { margin-top: 0; color: var(--retro-blue); letter-spacing: 0.06em; text-transform: uppercase; font-size: 1.1rem; }
 
     .field-group { display: grid; gap: 12px; margin-top: 16px; }
-    .field-group label { display: grid; gap: 6px; font-size: 0.9rem; color: var(--text-soft); }
-    input[type="text"], input[type="email"], input[type="password"], textarea, input[type="file"] { width: 100%; background: rgba(3, 10, 4, 0.92); border: 1px solid rgba(140, 255, 128, 0.18); border-radius: 8px; color: var(--text); font-family: inherit; font-size: 0.9rem; padding: 10px 12px; }
+    .field-group label { display: grid; gap: 6px; font-size: 0.9rem; color: var(--dark-blue); }
+    input[type="text"], input[type="email"], input[type="password"], textarea, input[type="file"] { width: 100%; background: rgba(255,255,255,0.92); border: 1px solid rgba(58, 98, 137, 0.2); border-radius: 12px; color: var(--dark-blue); font-family: inherit; font-size: 0.95rem; padding: 12px 14px; }
     textarea { min-height: 120px; resize: vertical; white-space: pre-wrap; line-height: 1.6; }
 
     .action-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
-    .button, .secondary { border: 1px solid var(--border); border-radius: 8px; background: rgba(8, 18, 10, 0.86); color: var(--text); padding: 8px 16px; cursor: pointer; transition: all 0.2s ease; text-decoration: none; font-family: inherit; font-size: 0.9rem; }
-    .button:hover, .secondary:hover { background: rgba(24, 55, 25, 0.96); transform: translateY(-1px); }
-    .button:active, .secondary:active { transform: translateY(0); }
+    .button, .secondary { border: 1px solid rgba(66, 117, 167, 0.24); border-radius: 12px; background: var(--retro-blue); color: var(--vintage-cream); padding: 10px 16px; cursor: pointer; transition: all 0.2s ease; text-decoration: none; font-size: 0.95rem; }
+    .secondary { background: transparent; color: var(--dark-blue); }
+    .button:hover, .secondary:hover { opacity: 0.92; transform: translateY(-1px); }
 
-    .feed-title { margin: 0 0 16px; font-size: 1.1rem; color: var(--accent); letter-spacing: 0.08em; text-transform: uppercase; }
-    .gallery { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+    .feed-title { margin: 0 0 16px; font-size: 1.2rem; color:#89baf2; letter-spacing: 0.08em; text-transform: uppercase; }
+    .gallery, .feed-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; padding: 20px 0; }
 
-    .card { position: relative; overflow: hidden; border-radius: 12px; background: rgba(5, 13, 6, 0.96); box-shadow: inset 0 0 40px rgba(0, 255, 120, 0.04), var(--shadow); }
-    .card-image { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; transition: transform 0.35s ease; cursor: pointer; }
+    .card { position: relative; border-radius: 25px; overflow: hidden; background: #ffffff; cursor: pointer; transition: transform 0.3s ease; box-shadow: var(--shadow); }
+    .card:hover { transform: scale(1.02); }
+    .card-image { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; filter: none; transition: transform 0.3s ease; display: block; }
     .card:hover .card-image { transform: scale(1.02); }
-    .card-body { padding: 14px; display: grid; gap: 10px; }
-    .card-title { margin: 0; font-size: 1rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); }
-    .card-date { margin: 0; font-size: 0.8rem; color: rgba(158, 255, 143, 0.72); }
-    .card-text { margin: 0; white-space: pre-wrap; line-height: 1.55; color: var(--text-soft); min-height: 3rem; }
-    .card-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
-    .card-actions button { border: 1px solid rgba(146, 255, 132, 0.22); background: rgba(7, 18, 7, 0.92); color: var(--text); padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; transition: background 0.2s ease; }
-    .card-actions button:hover { background: rgba(24, 60, 24, 0.94); }
-    .card-actions button.delete { border-color: rgba(255, 110, 110, 0.24); color: #ff9c9c; }
 
-    .status { margin-top: 12px; color: rgba(150, 255, 140, 0.8); font-size: 0.9rem; }
+    .card-overlay { position: absolute; bottom: 0; width: 100%; background: linear-gradient(transparent, var(--dark-blue)); color: white; padding: 16px; box-sizing: border-box; }
+    .card-overlay-title { font-size: 14px; font-weight: bold; margin: 0; color: rgba(192, 186, 244, 0.808); }
+    .card-overlay-date { font-size: 10px; opacity: 0.8; margin: 4px 0 0; }
+
+    .card-body { padding: 16px; display: grid; gap: 10px; }
+    .card-title { margin: 0; font-size: 1rem; font-weight: bold; color: var(--retro-blue); }
+    .card-date { margin: 0; font-size: 0.82rem; color: var(--muted); opacity: 0.85; }
+    .card-text { margin: 0; white-space: pre-wrap; line-height: 1.5; color: var(--dark-blue); min-height: 3rem; }
+
+    /* BOTONES DE LA CARD (EDITAR/BORRAR): Ahora sólidos */
+    .card-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; padding-bottom: 10px; padding-right: 10px; }
+    .card-actions button { border: 1px solid var(--dark-blue); background: var(--retro-blue); color: var(--vintage-cream); padding: 8px 12px; border-radius: 10px; cursor: pointer; font-size: 0.88rem; transition: background 0.2s ease; opacity: 1; }
+    .card-actions button:hover { background: var(--light-blue); color: var(--dark-blue); }
+    
+    /* BOTÓN BORRAR: Sólido rojizo */
+    .card-actions button.delete { border-color: #b23a3a; background: #ff6e6e; color: white; }
+    .card-actions button.delete:hover { background: #b23a3a; }
+    
+    /* Modal Expandido */
+    .entry-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(41, 45, 83, 0.95); z-index: 2000; justify-content: center; align-items: center; padding: 20px; overflow-y: auto; }
+    .entry-modal.show { display: flex; }
+    .entry-modal-content { background: var(--vintage-cream); border-radius: 30px; max-width: 600px; width: 100%; padding: 30px; text-align: center; box-shadow: var(--shadow); position: relative; }
+    .entry-modal-image { width: 100%; border-radius: 20px; margin-bottom: 20px; max-height: 400px; object-fit: contain; }
+    .entry-modal-title { font-size: 1.5rem; color:#21104b; margin: 0 0 10px; font-weight: bold; }
+    .entry-modal-date { font-size: 0.9rem; color: var(--muted); margin: 0 0 20px; }
+    .entry-modal-text { text-align: left; color:rgba(22, 27, 71, 0.88); white-space: pre-wrap; line-height: 1.6; margin: 20px 0; }
+    .entry-modal-gallery { display: flex; gap: 10px; margin: 20px 0; justify-content: center; flex-wrap: wrap; }
+    .entry-modal-thumbnail { width: 60px; height: 60px; border-radius: 10px; cursor: pointer; border: 2px solid transparent; transition: border 0.2s ease; object-fit: cover; }
+    .entry-modal-thumbnail.active { border-color: var(--retro-blue); }
+    .entry-modal-controls { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
+    .entry-modal-btn { background: var(--retro-blue); color: var(--vintage-cream); border: none; padding: 10px 16px; border-radius: 10px; cursor: pointer; font-size: 0.9rem; transition: background 0.2s ease; }
+    .entry-modal-btn:hover { background: var(--light-blue); }
+    .entry-modal-close { background: transparent; color: var(--dark-blue); font-size: 1.5rem; cursor: pointer; border: none; position: absolute; top: 20px; right: 20px; }
+    .entry-modal-close:hover { opacity: 0.7; }
+
+    .status { margin-top: 12px; color: var(--muted); font-size: 0.9rem; }
+
+    @media (max-width: 900px) {
+      .gallery, .feed-grid { grid-template-columns: repeat(2, 1fr); }
+    }
 
     @media (max-width: 700px) {
       .app-shell { padding: 16px; }
       header { flex-direction: column; align-items: center; gap: 16px; }
       .modal-content { padding: 20px; }
-      .gallery { grid-template-columns: 1fr; }
+      .gallery, .feed-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -132,7 +165,7 @@
       <div class="field-group">
         <label>
           Imagen
-          <input type="file" id="imageInput" accept="image/*" />
+          <input type="file" id="imageInput" multiple accept="image/*" />
         </label>
         <label>
           Título corto
@@ -147,7 +180,7 @@
         <button class="button" id="publishBtn">Publicar</button>
         <button class="secondary hidden" id="cancelEditBtn">Cancelar edición</button>
       </div>
-      <p class="hint">Solo el administrador puede subir, editar y borrar publicaciones. Las demás cuentas solo tienen modo lectura.</p>
+      <p class="hint">modo editor.</p>
     </section>
 
     <section>
@@ -155,6 +188,19 @@
       <div class="gallery" id="entries"></div>
       <p class="status" id="feedStatus">Cargando publicaciones...</p>
     </section>
+  </div>
+
+  <!-- Modal Expandido para Ver Entrada Completa -->
+  <div class="entry-modal" id="entryModal">
+    <div class="entry-modal-content">
+      <button class="entry-modal-close" onclick="closeEntryModal()">×</button>
+      <img class="entry-modal-image" id="modalImage" src="" alt="Imagen de la entrada" />
+      <h2 class="entry-modal-title" id="modalTitle"></h2>
+      <p class="entry-modal-date" id="modalDate"></p>
+      <div class="entry-modal-gallery" id="modalGallery"></div>
+      <p class="entry-modal-text" id="modalText"></p>
+      <div class="entry-modal-controls" id="modalControls"></div>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.35.0/dist/umd/supabase.min.js"></script>
@@ -198,6 +244,10 @@
     let currentEditId = null;
     let currentImageUrl = "";
     let currentImagePath = "";
+    let currentImageUrls = [];
+    let currentImagePaths = [];
+    let currentModalEntry = null;
+    let currentModalImageIndex = 0;
 
     // Modal event listeners
     accessBtn.addEventListener("click", () => {
@@ -215,7 +265,13 @@
       }
     });
 
-    publishBtn.addEventListener("click", handlePublish);
+    document.getElementById("entryModal").addEventListener("click", (e) => {
+      if (e.target.id === "entryModal") {
+        closeEntryModal();
+      }
+    });
+
+    publishBtn.addEventListener("click", subirPublicacion);
     cancelEditBtn.addEventListener("click", resetForm);
 
     async function initAuth() {
@@ -293,10 +349,10 @@
       return { imageUrl:publicUrlData.publicUrl, imagePath };
     }
 
-    async function handlePublish() {
+    async function subirPublicacion() {
       const title = titleInput.value.trim();
       const text = textInput.value.trim();
-      const file = imageInput.files[0];
+      const files = imageInput.files;
       const isAdmin = currentUser?.email === adminEmail;
 
       if (!isAdmin) {
@@ -304,32 +360,47 @@
         return;
       }
 
-      if (!currentImageUrl && !file) {
-        alert("Selecciona una imagen para publicar.");
+      if (files.length === 0 && currentImageUrls.length === 0) {
+        alert("Selecciona al menos una imagen para publicar.");
         return;
+      }
+
+      if (files.length > 5) {
+        return alert("Máximo 5 fotos");
       }
 
       publishBtn.disabled = true;
       publishBtn.textContent = currentEditId ? "Guardando..." : "Publicando...";
 
       try {
-        let imageUrl = currentImageUrl;
-        let imagePath = currentImagePath;
+        let urls = [];
+        let paths = [];
 
-        if (file) {
-          if (currentImagePath) {
-            await supabaseClient.storage.from(SUPABASE_BUCKET).remove([currentImagePath]).catch(() => {});
+        if (files.length > 0) {
+          for (let file of files) {
+            const filePath = `Entries/${Date.now()}_${file.name.replace(/\s+/g, "_")}`;
+            const { data, error } = await supabaseClient.storage
+              .from('Entries')
+              .upload(filePath, file);
+
+            if (error) throw new Error(error.message);
+
+            const { data: publicUrlData, error: publicUrlError } = supabaseClient.storage.from('Entries').getPublicUrl(filePath);
+            if (publicUrlError) throw new Error(publicUrlError.message);
+
+            urls.push(publicUrlData.publicUrl);
+            paths.push(filePath);
           }
-          const uploaded = await uploadImage(file);
-          imageUrl = uploaded.imageUrl;
-          imagePath = uploaded.imagePath;
+        } else {
+          urls = [...currentImageUrls];
+          paths = [...currentImagePaths];
         }
 
         const payload = {
           title: title || "",
           text: text || "",
-          imageUrl,
-          imagePath,
+          imageUrls: urls,
+          imagePaths: paths,
           updatedAt: new Date().toISOString()
         };
 
@@ -339,7 +410,17 @@
           alert("Cambios guardados con éxito.");
           window.location.reload();
         } else {
-          const { error } = await supabaseClient.from('diario').insert([{ ...payload, createdAt: new Date().toISOString() }]);
+          const { error: insertError } = await supabaseClient
+            .from('diario')
+            .insert([{
+              title: titleInput.value || "",
+              text: textInput.value || "",
+              imageUrls: urls,
+              imagePaths: paths,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString()
+            }]);
+          if (insertError) throw new Error(insertError.message);
         }
 
         resetForm();
@@ -464,58 +545,156 @@
 
       const image = document.createElement("img");
       image.className = "card-image";
-      image.src = item.imageUrl || "";
+      const imageUrl = Array.isArray(item.imageUrls) ? item.imageUrls[0] : item.imageUrl || "";
+      image.src = imageUrl;
       image.alt = item.title || "Publicación";
-      image.addEventListener("click", () => { if (item.imageUrl) window.open(item.imageUrl, "_blank"); });
 
-      const body = document.createElement("div");
-      body.className = "card-body";
+      const overlay = document.createElement("div");
+      overlay.className = "card-overlay";
 
-      const title = document.createElement("h3");
-      title.className = "card-title";
-      title.textContent = item.title || "Sin título";
+      const overlayTitle = document.createElement("p");
+      overlayTitle.className = "card-overlay-title";
+      overlayTitle.textContent = item.title || "Sin título";
 
-      const date = document.createElement("p");
-      date.className = "card-date";
-      date.textContent = formatTimestamp(item.createdAt || item.updatedAt);
+      const overlayDate = document.createElement("p");
+      overlayDate.className = "card-overlay-date";
+      overlayDate.textContent = formatTimestamp(item.createdAt || item.updatedAt);
 
-      const text = document.createElement("p");
-      text.className = "card-text";
-      text.textContent = item.text || "";
+      overlay.append(overlayTitle, overlayDate);
 
-      body.append(title, date, text);
+      // Hacer la tarjeta clickeable para abrir modal
+      card.addEventListener("click", (e) => {
+        if (!e.target.classList.contains("delete") && !e.target.classList.contains("edit")) {
+          openEntryModal(item);
+        }
+      });
 
+      // Agregar controles de admin si es necesario
       const isAdmin = currentUser?.email === adminEmail;
       if (isAdmin) {
         const actions = document.createElement("div");
         actions.className = "card-actions";
+        actions.style.position = "absolute";
+        actions.style.top = "10px";
+        actions.style.right = "10px";
+        actions.style.zIndex = "10";
+        actions.style.gap = "5px";
 
         const editButton = document.createElement("button");
         editButton.type = "button";
         editButton.className = "edit";
-        editButton.textContent = "Editar";
-        editButton.addEventListener("click", () => loadEntryForEdit(item.id, item));
+        editButton.textContent = "✎";
+        editButton.style.padding = "6px 10px";
+        editButton.addEventListener("click", (e) => {
+          e.stopPropagation();
+          loadEntryForEdit(item.id, item);
+        });
 
         const deleteButton = document.createElement("button");
         deleteButton.type = "button";
         deleteButton.className = "delete";
-        deleteButton.textContent = "Eliminar";
-        deleteButton.addEventListener("click", () => eliminarPublicacion(item.id, item.imagePath));
+        deleteButton.textContent = "🗑";
+        deleteButton.style.padding = "6px 10px";
+        deleteButton.addEventListener("click", (e) => {
+          e.stopPropagation();
+          eliminarPublicacion(item.id, item.imagePaths || item.imagePath);
+        });
 
         actions.append(editButton, deleteButton);
-        body.appendChild(actions);
+        card.appendChild(actions);
       }
 
-      card.append(image, body);
+      card.append(image, overlay);
       return card;
+    }
+
+    function openEntryModal(item) {
+      currentModalEntry = item;
+      currentModalImageIndex = 0;
+      const modal = document.getElementById("entryModal");
+
+      const imageUrls = Array.isArray(item.imageUrls) ? item.imageUrls : item.imageUrl ? [item.imageUrl] : [];
+      const modalImage = document.getElementById("modalImage");
+      const modalTitle = document.getElementById("modalTitle");
+      const modalDate = document.getElementById("modalDate");
+      const modalText = document.getElementById("modalText");
+      const modalGallery = document.getElementById("modalGallery");
+      const modalControls = document.getElementById("modalControls");
+
+      // Cargar contenido
+      modalImage.src = imageUrls[0] || "";
+      modalTitle.textContent = item.title || "Sin título";
+      modalDate.textContent = formatTimestamp(item.createdAt || item.updatedAt);
+      modalText.textContent = item.text || "";
+
+      // Crear galería de miniaturas si hay múltiples imágenes
+      modalGallery.innerHTML = "";
+      if (imageUrls.length > 1) {
+        imageUrls.forEach((url, idx) => {
+          const thumb = document.createElement("img");
+          thumb.src = url;
+          thumb.className = "entry-modal-thumbnail" + (idx === 0 ? " active" : "");
+          thumb.addEventListener("click", () => switchModalImage(idx));
+          modalGallery.appendChild(thumb);
+        });
+      }
+
+      // Controles de navegación si hay múltiples imágenes
+      modalControls.innerHTML = "";
+      if (imageUrls.length > 1) {
+        const prevBtn = document.createElement("button");
+        prevBtn.className = "entry-modal-btn";
+        prevBtn.textContent = "← Anterior";
+        prevBtn.addEventListener("click", () => switchModalImage(currentModalImageIndex - 1));
+        modalControls.appendChild(prevBtn);
+
+        const counter = document.createElement("span");
+        counter.style.color = "var(--dark-blue)";
+        counter.style.alignSelf = "center";
+        counter.textContent = `${currentModalImageIndex + 1} / ${imageUrls.length}`;
+        modalControls.appendChild(counter);
+
+        const nextBtn = document.createElement("button");
+        nextBtn.className = "entry-modal-btn";
+        nextBtn.textContent = "Siguiente →";
+        nextBtn.addEventListener("click", () => switchModalImage(currentModalImageIndex + 1));
+        modalControls.appendChild(nextBtn);
+      }
+
+      modal.classList.add("show");
+    }
+
+    function switchModalImage(index) {
+      const imageUrls = Array.isArray(currentModalEntry.imageUrls) ? currentModalEntry.imageUrls : currentModalEntry.imageUrl ? [currentModalEntry.imageUrl] : [];
+      if (index < 0) index = imageUrls.length - 1;
+      if (index >= imageUrls.length) index = 0;
+
+      currentModalImageIndex = index;
+      document.getElementById("modalImage").src = imageUrls[index];
+
+      // Actualizar miniaturas activas
+      document.querySelectorAll(".entry-modal-thumbnail").forEach((thumb, idx) => {
+        thumb.classList.toggle("active", idx === index);
+      });
+
+      // Actualizar contador
+      const counter = document.querySelector(".entry-modal-controls span");
+      if (counter) counter.textContent = `${index + 1} / ${imageUrls.length}`;
+    }
+
+    function closeEntryModal() {
+      document.getElementById("entryModal").classList.remove("show");
+      currentModalEntry = null;
     }
 
     function loadEntryForEdit(id, item) {
       currentEditId = id;
       titleInput.value = item.title || "";
       textInput.value = item.text || "";
-      currentImageUrl = item.imageUrl || "";
-      currentImagePath = item.imagePath || "";
+      currentImageUrls = Array.isArray(item.imageUrls) ? item.imageUrls : item.imageUrl ? [item.imageUrl] : [];
+      currentImagePaths = Array.isArray(item.imagePaths) ? item.imagePaths : item.imagePath ? [item.imagePath] : [];
+      currentImageUrl = currentImageUrls[0] || "";
+      currentImagePath = currentImagePaths[0] || "";
       publishBtn.textContent = "Guardar cambios";
       cancelEditBtn.classList.remove("hidden");
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -541,7 +720,9 @@
         if (tableError) throw tableError;
 
         // 2. Borrar la imagen del Storage
-        if (imagePath) {
+        if (Array.isArray(imagePath)) {
+          await supabaseClient.storage.from('Entries').remove(imagePath);
+        } else if (imagePath) {
           await supabaseClient.storage.from('Entries').remove([imagePath]);
         }
 
@@ -581,6 +762,17 @@
     document.getElementById('titleInput').value = '';
     document.getElementById('textInput').value = '';
     document.getElementById('imageInput').value = '';
+    
+    // Resetear variables de edición
+    currentEditId = null;
+    currentImageUrls = [];
+    currentImagePaths = [];
+    currentImageUrl = "";
+    currentImagePath = "";
+    
+    // Actualizar botón
+    publishBtn.textContent = "Publicar";
+    cancelEditBtn.classList.add("hidden");
     
     // Si tienes un mensaje de estado, lo reinicia
     const status = document.getElementById('feedStatus');

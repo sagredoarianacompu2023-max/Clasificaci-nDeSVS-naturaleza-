@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
   <title>Diario Visual Retro</title>
-<style>
+  <style>
     :root {
       --retro-blue: #469cf39d;
       --light-blue: #085f7f;
@@ -18,148 +18,190 @@
     }
 
     * { box-sizing: border-box; }
-    html, body { margin: 0; min-height: 100%; background-color:rgb(12, 36, 77); color: white; font-family: 'Courier New', Courier, monospace; }
+    html, body { margin: 0; min-height: 100%; background-color:rgb(12, 36, 77); color: var(--#30066b); font-family: 'Courier New', Courier, monospace; }
 
-    .app-shell { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 15px; }
-    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 8px 0; }
-    h1 { margin: 0; font-size: clamp(1.4rem, 4vw, 2.2rem); letter-spacing: 0.08em; text-transform: uppercase; color: var(--retro-blue); }
-
-    /* --- PANEL ADMINISTRATIVO COMPACTO (OPCIÓN 1) --- */
-    .panel { 
-      margin-bottom: 25px; 
-      padding: 15px; 
-      background: rgba(41, 45, 83, 0.95); /* Azul profundo para contraste */
-      border-radius: 25px; 
-      box-shadow: var(--shadow); 
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      max-width: 500px;
-      margin-left: auto;
-      margin-right: auto;
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
     }
     
-    .panel h2 { 
-      margin: 0 0 12px 0; 
-      color: var(--retro-blue); 
-      text-transform: uppercase; 
-      font-size: 0.85rem; 
-      text-align: center;
-      opacity: 0.8;
-    }
+    .app-shell { position: relative; z-index: 1; max-width: 480px; margin: 0 auto; padding: 12px; }
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding: 8px 0; }
+    h1 { margin: 0; font-size: clamp(1.8rem, 3vw, 2.8rem); letter-spacing: 0.08em; text-transform: uppercase; color: var(--retro-blue); }
+    .access-btn, .logout-btn, .button, .secondary { font-family: inherit; }
+    .access-btn { background: var(--retro-blue); color: var(--vintage-cream); border: 1px solid var(--dark-blue); border-radius: 12px; padding: 10px 18px; cursor: pointer; transition: transform 0.2s ease, background 0.2s ease; }
+    .access-btn:hover { background: var(--light-blue); transform: translateY(-1px); }
 
-    /* Fila superior para Imagen y Título */
-    .compact-row {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 10px;
-      align-items: center;
-    }
+    .user-info { display: flex; align-items: center; gap: 12px; font-size: 0.9rem; }
+    .user-info span { color: var(--vintage-cream); }
+    .logout-btn { background: var(--vintage-cream); border: 1px solid var(--dark-blue); border-radius: 12px; color: var(--dark-blue); padding: 8px 14px; cursor: pointer; transition: background 0.2s ease; opacity: 1; }
+    .logout-btn:hover { background: var(--light-blue); }
 
-    .file-input-wrapper {
-      background: rgba(255,255,255,0.1);
-      padding: 8px 12px;
-      border-radius: 12px;
-      cursor: pointer;
-      font-size: 0.8rem;
-      border: 1px solid rgba(255,255,255,0.2);
-      white-space: nowrap;
-    }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(41, 45, 83, 0.88); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
+    .modal-overlay.show { opacity: 1; visibility: visible; }
+    .modal-content { background: var(--vintage-cream); padding: 24px; border-radius: 28px; max-width: 480px; width: 90%; text-align: center; box-shadow: var(--shadow); }
+    .modal-content h2 { margin-top: 0; color: var(--retro-blue); font-size: 1.5rem; }
+    .modal-content .field-group { margin-top: 18px; }
+    .modal-content .field-group label { font-size: 0.95rem; color: var(--dark-blue); }
+    .modal-content input { margin-bottom: 10px; }
+    .modal-content .action-row { display: flex; gap: 12px; justify-content: center; margin-top: 20px; }
+    .modal-content .button { min-width: 120px; }
 
-    input[type="text"], textarea { 
-      width: 100%; 
-      background: white; 
-      border: none; 
-      border-radius: 12px; 
-      color: var(--dark-blue); 
-      font-family: inherit; 
-      font-size: 0.9rem; 
-      padding: 10px 14px; 
-    }
+    .panel { margin-bottom: 32px; padding: 20px; background: rgba(123, 75, 236, 0.453); border-radius: 20px; box-shadow: var(--shadow); border: 1px solid rgba(58, 98, 137, 0.16); }
+    .hidden { display: none !important; }
+    .panel h2 { margin-top: 0; color: var(--retro-blue); letter-spacing: 0.06em; text-transform: uppercase; font-size: 1.1rem; }
 
-    /* Textarea compacto */
-    textarea { 
-      min-height: 70px; 
-      margin-top: 0;
-      line-height: 1.4;
-    }
+    .field-group { display: grid; gap: 12px; margin-top: 16px; }
+    .field-group label { display: grid; gap: 6px; font-size: 0.9rem; color: var(--dark-blue); }
+    input[type="text"], input[type="email"], input[type="password"], textarea, input[type="file"] { width: 100%; background: rgba(255,255,255,0.92); border: 1px solid rgba(58, 98, 137, 0.2); border-radius: 12px; color: var(--dark-blue); font-family: inherit; font-size: 0.95rem; padding: 12px 14px; }
+    textarea { min-height: 120px; resize: vertical; white-space: pre-wrap; line-height: 1.6; }
 
-    .button { 
-      width: 100%;
-      background: var(--retro-blue); 
-      color: var(--vintage-cream); 
-      border: none;
-      border-radius: 12px; 
-      padding: 12px; 
-      cursor: pointer; 
-      font-weight: bold;
-      font-size: 0.9rem;
-      margin-top: 10px;
-    }
+    .action-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+    .button, .secondary { border: 1px solid rgba(66, 117, 167, 0.24); border-radius: 12px; background: var(--retro-blue); color: var(--vintage-cream); padding: 10px 16px; cursor: pointer; transition: all 0.2s ease; text-decoration: none; font-size: 0.95rem; }
+    .secondary { background: transparent; color: var(--dark-blue); }
+    .button:hover, .secondary:hover { opacity: 0.92; transform: translateY(-1px); }
 
-    /* --- FEED Y CARDS (3 COLUMNAS) --- */
-    .feed-title { margin: 0 0 16px; font-size: 1.1rem; color:#5e92ce; text-transform: uppercase; }
-    .gallery, .feed-grid { 
-      display: grid !important; 
-      grid-template-columns: repeat(3, 1fr) !important; 
-      gap: 10px; 
-      padding: 10px 0; 
-    }
+    .feed-title { margin: 0 0 16px; font-size: 1.2rem; color:#5e92ce; letter-spacing: 0.08em; text-transform: uppercase; }
+    .gallery, .feed-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; padding: 20px 0; }
 
     .card {
       position: relative;
-      border-radius: 20px;
+      border-radius: 25px;
       background: #f1f6ff;
-      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
       box-shadow: var(--shadow);
-      transition: transform 0.2s;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.4);
     }
+    .card:hover { transform: translateY(-2px); box-shadow: 0 20px 60px rgba(41, 45, 83, 0.16); }
     .card-image {
       width: 100%;
+      border-radius: 20px;
       aspect-ratio: 1 / 1;
       object-fit: cover;
+      filter: none;
       display: block;
     }
 
-    .card-body { padding: 8px; }
-    .card-title { font-size: 0.75rem !important; font-weight: bold; color: var(--dark-blue); margin: 0; }
-    .card-date { font-size: 0.65rem !important; color: var(--muted); }
-
-    /* --- MODAL EXPANDIDO (ESTILO IG) --- */
-    .entry-modal { 
-        display: none; position: fixed; inset: 0; 
-        background: rgba(13, 5, 53, 0.98); z-index: 2000; 
-        justify-content: center; align-items: center; padding: 15px; 
+    .card-body {
+      padding: 12px 12px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
     }
-    .entry-modal.show { display: flex; }
+.card-title {
+      font-size: 0.85rem !important; /* Tamaño pequeño para que no se amontone */
+      font-weight: bold;
+      color: var(--dark-blue);
+      margin-top: 5px;
+    }
+    .card-date {
+      font-size: 0.7rem !important;
+      color: var(--muted);
+    }
+    .card-text { display: none; }
+
+
+    /* BOTONES DE LA CARD (EDITAR/BORRAR): Ahora sólidos */
+    .card-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; padding-bottom: 10px; padding-right: 10px; }
+    .card-actions button { border: 1px solid var(--dark-blue); background: var(--retro-blue); color: var(--vintage-cream); padding: 8px 12px; border-radius: 10px; cursor: pointer; font-size: 0.88rem; transition: background 0.2s ease; opacity: 1; }
+    .card-actions button:hover { background: var(--light-blue); color: var(--dark-blue); }
     
+    /* BOTÓN BORRAR: Sólido rojizo */
+    .card-actions button.delete { border-color: #b23a3a; background: #ff6e6e; color: white; }
+    .card-actions button.delete:hover { background: #b23a3a; }
+    
+    /* Modal Expandido */
+    .entry-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(41, 45, 83, 0.95); z-index: 2000; justify-content: center; align-items: center; padding: 20px; overflow-y: auto; }
+    .entry-modal.show { display: flex; }
+    /* Contenedor del Modal */
     .entry-modal-content {
       background: #F5F2EC;
-      width: 95vw;
-      height: 80vh;
+      width: 92vw;
+      height: 85vh;
       border-radius: 30px;
       display: flex;
       flex-direction: column;
+      padding: 0;
       overflow: hidden;
       position: relative;
+      box-shadow: var(--shadow);
     }
 
-    .entry-modal-image { width: 100%; height: 55%; object-fit: cover; }
-
-    .entry-modal-info { padding: 20px; flex: 1; overflow-y: auto; color: #1a1a1a; }
-    .entry-modal-title { font-size: 1.3rem !important; font-weight: 800; margin-bottom: 5px; }
-    .entry-modal-text { font-size: 0.95rem !important; line-height: 1.5; color: #333; }
-    .entry-modal-date { font-size: 0.75rem !important; color: #8e8e8e; margin-top: 12px; }
-
-    .entry-modal-close { 
-        position: absolute; top: 15px; right: 15px; 
-        background: rgba(0,0,0,0.5); color: white; 
-        width: 35px; height: 35px; border-radius: 50%; 
-        border: none; cursor: pointer; font-size: 1.2rem;
-        z-index: 10;
+    /* Imagen dentro del modal */
+    .entry-modal-image {
+      width: 100%;
+      height: 60%;
+      object-fit: cover;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     }
 
-    .hidden { display: none !important; }
-</style>
+    .entry-modal-icons {
+      display: flex;
+      justify-content: flex-start;
+      gap: 18px;
+      margin: 14px 18px 0;
+    }
+    .entry-modal-icons span {
+      font-size: 1.45rem;
+      cursor: pointer;
+      color: var(--dark-blue);
+      transition: color 0.2s ease, transform 0.2s ease;
+    }
+    .entry-modal-icons span:hover {
+      color: var(--retro-blue);
+      transform: translateY(-1px);
+    }
 
+    .entry-modal-gallery { display: flex; gap: 10px; margin: 14px 18px 0; justify-content: flex-start; overflow-x: auto; }
+    .entry-modal-thumbnail { width: 52px; height: 52px; border-radius: 14px; cursor: pointer; border: 2px solid transparent; transition: border 0.2s ease; object-fit: cover; }
+    .entry-modal-thumbnail.active { border-color: var(--retro-blue); }
+
+    .entry-modal-info {
+      padding: 15px;
+      flex: 1;
+      overflow-y: auto;
+      text-align: left;
+    }
+
+.entry-modal-title {
+      font-size: 1.4rem !important; /* Título grande y llamativo */
+      font-weight: 800;
+      color: #1a1a1a;
+      margin-bottom: 8px;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; /* Más estilo IG */
+    }
+.entry-modal-text {
+      font-size: 1rem !important; /* Tamaño estándar de lectura */
+      line-height: 1.5; /* Espaciado entre líneas para que no canse la vista */
+      color: #333;
+      text-align: left;
+      margin-top: 10px;
+      font-family: 'Segoe UI', Roboto, sans-serif;
+      white-space: pre-wrap;
+      margin: 0;
+    }
+.entry-modal-date {
+      font-size: 0.8rem !important;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #8e8e8e;
+      margin-top: 15px;
+    }
+
+    .entry-modal-controls { display: flex; gap: 10px; justify-content: space-between; flex-wrap: wrap; margin-top: 12px; }
+    .entry-modal-btn { background: var(--retro-blue); color: var(--vintage-cream); border: none; padding: 10px 16px; border-radius: 12px; cursor: pointer; font-size: 0.92rem; transition: background 0.2s ease; }
+    .entry-modal-btn:hover { background: var(--light-blue); }
+    .entry-modal-close { background: transparent; color: var(--dark-blue); font-size: 1.6rem; cursor: pointer; border: none; position: absolute; top: 18px; right: 18px; }
+    .entry-modal-close:hover { opacity: 0.8; }
+
+    .status { margin-top: 12px; color: var(--muted); font-size: 0.9rem; }
+
+    /* Mantener siempre 3 columnas en todo dispositivo */
+    .gallery, .feed-grid { grid-template-columns: repeat(3, 1fr) !important; }
+  </style>
 </head>
 <body>
   <div class="app-shell">
@@ -198,27 +240,29 @@
       </div>
     </div>
 
-    <section class="panel hidden" id="adminPanel">
-      <h2>Panel de administración</h2>
-      <div class="field-group">
-        <label>
-          Imagen
-          <input type="file" id="imageInput" multiple accept="image/*" />
-        </label>
-        <label>
-          Título corto
-          <input type="text" id="titleInput" placeholder="Ej. Caminata en el bosque" />
-        </label>
-        <label>
-          Texto largo
-          <textarea id="textInput" placeholder="Escribe tu entrada..." spellcheck="true"></textarea>
-        </label>
+    <section class="panel" id="adminPanel">
+      <h2>NUEVA ENTRADA</h2>
+      
+      <div class="compact-form-row">
+        <div class="file-zone">
+          <label for="imageInput" class="custom-file-upload">
+            
+          </label>
+          <input type="file" id="imageInput" multiple accept="image/*" onchange="actualizarContadorFotos()">
+          <span id="fileCount" class="file-count">0/5</span>
+        </div>
+        
+        <input type="text" id="titleInput" placeholder="Título corto...">
       </div>
+
+      <div class="field-group">
+        <textarea id="textInput" placeholder="Escribe tu entrada..."></textarea>
+      </div>
+
       <div class="action-row">
-        <button class="button" id="publishBtn">Publicar</button>
+        <button class="button" onclick="subirPublicacion()" id="publishBtn">PUBLICAR</button>
         <button class="secondary hidden" id="cancelEditBtn">Cancelar edición</button>
       </div>
-      <p class="hint">modo editor.</p>
     </section>
 
     <section>
@@ -808,6 +852,22 @@
 
     initAuth();
     loadEntries();
+
+    function actualizarContadorFotos() {
+      const fileCountEl = document.getElementById('fileCount');
+      if (!fileCountEl) return;
+
+      const max = 5;
+      const count = (imageInput?.files?.length ?? 0);
+      fileCountEl.textContent = `${count}/${max}`;
+
+      if (count > max) {
+        alert(`Máximo ${max} fotos`);
+      }
+
+      // Si está en modo edición (sin nuevas imágenes), mostramos el contador según el input actual.
+      // SubirPublicacion vuelve a validar.
+    }
 
     function resetForm() {
     // Limpia los inputs de texto

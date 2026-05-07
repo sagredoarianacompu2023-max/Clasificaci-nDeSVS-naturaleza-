@@ -282,20 +282,25 @@
   </div>
 
   <!-- Modal Expandido para Ver Entrada Completa -->
-  <div class="entry-modal" id="entryModal">
-    <div class="entry-modal-content">
-      <button class="entry-modal-close" onclick="closeEntryModal()/button>
-      <img class="entry-modal-image" id="modalImage" src="" alt= "Imagen de la entrada"/>
-      <div class="entry-modal-gallery" id="modalGallery"></div>
-      <div class="entry-modal-info">
-        <h2 class="entry-modal-title" id="modalTitle"></h2>
-        <p class="entry-modal-text" id="modalText"></p>
-        <p class="entry-modal-date" id="modalDate"></p>
-      </div>
-      <div class="entry-modal-controls" id="modalControls"></div>
+<div class="entry-modal" id="entryModal">
+  <div class="entry-modal-content">
+    <button class="entry-modal-close" onclick="closeEntryModal()">&times;</button>
+    
+    <img class="entry-modal-image" id="modalImage" src="" alt="Imagen de la entrada">
+    
+    <div class="entry-modal-gallery" id="modalGallery"></div>
+    
+    <div class="entry-modal-info">
+      <h2 class="entry-modal-title" id="modalTitle"></h2>
+      
+      <p class="entry-modal-text" id="modalText"></p>
+      
+      <p class="entry-modal-date" id="modalDate"></p>
     </div>
+    
+    <div class="entry-modal-controls" id="modalControls"></div>
   </div>
-
+</div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.35.0/dist/umd/supabase.min.js"></script>
   <script>
     // Correo que tiene privilegios de administración.
